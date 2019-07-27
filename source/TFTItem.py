@@ -2,26 +2,31 @@ from . import Node
 
 
 class TFTItem(Node.Node):
-    def __init__(self):
-        super().__init__()
 
-    def create_from_object(self, champ):
-        self.properties["key"] = champ["key"]
-        self.properties["name"] = champ["name"]
+    def data_effect(self, other_data):
+        for stat in self.get_data()["ratio"]:
+            other_data["ratio"][stat] = [x + self.get_data()["ratio"][stat][0] for x in other_data["ratio"][stat]]
 
-        #these need to be linked to TFT class instances
-        self.add_data("nominal", "origin", champ["origin"])
-        self.add_data("nominal", "class", champ["class"])
+        return other_data
 
-        self.add_data("ratio", "cost", champ["cost"])
+    @staticmethod
+    def create_from_dictionary(data_dict):
+        new_node = TFTItem()
 
-        self.add_data("ratio", "damage", champ["stats"]["offense"]["damage"])
-        self.add_data("ratio", "attackSpeed", champ["stats"]["offense"]["attackSpeed"])
-        self.add_data("ratio", "range", champ["stats"]["offense"]["range"])
+        new_node.set_property("key", data_dict["key"])
+        new_node.set_property("name", data_dict["name"])
+        for stat in data_dict["stats"]:
+            new_node.add_data("ratio", stat["name"], stat["amount"])
 
-        self.add_data("ratio", "health", champ["stats"]["defense"]["health"])
-        self.add_data("ratio", "armor", champ["stats"]["defense"]["armor"])
-        self.add_data("ratio", "magicResist", champ["stats"]["defense"]["magicResist"])
+        if "buildsInto" in data_dict:
+            for item in data_dict["buildsInto"]:
+                new_node.add_data("nominal", "buildsInto", item)
+
+        if "buildsFrom" in data_dict:
+            for item in data_dict["buildsFrom"]:
+                new_node.add_data("nominal", "buildsFrom", item)
+
+        return new_node
 
        # "abilities"
 

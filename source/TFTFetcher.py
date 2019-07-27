@@ -1,7 +1,9 @@
 from . import constants
 from . import TFTChampion
+from . import TFTItem
 import urllib.request
 import json
+
 
 class TFTFetcher:
     def __init__(self):
@@ -19,6 +21,10 @@ class TFTFetcher:
 
     def create_champion_nodes(self):
         for champ in self.output['CHAMPIONS']:
-            new_champion = TFTChampion.TFTChampion()
-            new_champion.create_from_object(self.output['CHAMPIONS'][champ])
+            new_champion = TFTChampion.TFTChampion.create_from_dictionary(self.output['CHAMPIONS'][champ])
             yield new_champion
+
+    def create_item_nodes(self):
+        for item in self.output['ITEMS']:
+            new_item = TFTItem.TFTItem.create_from_dictionary(self.output['ITEMS'][item])
+            yield new_item
